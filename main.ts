@@ -1,13 +1,3 @@
-let TREE_SPAWN_TIME = 10000
-function create_tree(x: number, y: number) {
-    
-    tree3 = sprites.create(assets.image`
-        tree
-        `, SpriteKind.Food)
-    tree3.setPosition(x, y)
-    tree3.setFlag(SpriteFlag.StayInScreen, false)
-}
-
 controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
     animation.runImageAnimation(nena, assets.animation`
             nena-animation-down
@@ -21,31 +11,6 @@ function chop_tree(tree: Sprite) {
     game.showLongText("Has aconseguit 2kg de llenya, ara en tens " + ("" + ("" + wood)) + "kg", DialogLayout.Bottom)
 }
 
-function remove_tree_from_list(tree: Sprite) {
-    for (let i = 0; i < trees.length; i++) {
-        if (trees[i] == tree) {
-            trees.removeAt(i)
-            return
-        }
-        
-    }
-}
-
-function spawn_tree() {
-    if (trees.length >= MAX_TREES) {
-        return
-    }
-    
-    let tree = sprites.create(assets.image`tree`, SpriteKind.Food)
-    let x = randint(16, scene.screenWidth() - 16)
-    let y = randint(16, scene.screenHeight() - 16)
-    tree.setPosition(x, y)
-    trees.push(tree)
-}
-
-game.onUpdateInterval(TREE_SPAWN_TIME, function spawn_tree_loop() {
-    spawn_tree()
-})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
     animation.runImageAnimation(nena, assets.animation`
             nena-animation-right
@@ -67,14 +32,59 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function on_up_pressed() {
             nena-animation-up
             `, 500, false)
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function on_on_overlap(player2: Sprite, tree2: Sprite) {
+function spawn_tree() {
     
-    tree_to_chop = tree2
+    if (trees.length >= MAX_TREES) {
+        return
+    }
+    
+    tree3 = sprites.create(assets.image`
+        tree
+        `, SpriteKind.Food)
+    x2 = randint(16, scene.screenWidth() - 16)
+    y2 = randint(16, scene.screenHeight() - 16)
+    tree3.setPosition(x2, y2)
+    trees.push(tree3)
+}
+
+function remove_tree_from_list(tree2: Sprite) {
+    let i = 0
+    while (i <= trees.length - 1) {
+        if (trees[i] == tree2) {
+            trees.removeAt(i)
+            return
+        }
+        
+        i += 1
+    }
+}
+
+game.onUpdate(function check_tree_overlap() {
+    
+    let overlapping = false
+    for (let tree of trees) {
+        if (nena.overlapsWith(tree)) {
+            tree_to_chop = tree
+            overlapping = true
+            break
+        }
+        
+    }
+    if (!overlapping) {
+        tree_to_chop = null
+    }
+    
 })
+let y2 = 0
+let x2 = 0
+let tree3 : Sprite = null
+let trees : Sprite[] = []
 let tree_to_chop : Sprite = null
 let wood = 0
-let tree3 : Sprite = null
+let tree32 : Sprite = null
+let MAX_TREES = 0
 let nena : Sprite = null
+let TREE_SPAWN_TIME = 10000
 tiles.setCurrentTilemap(tilemap`
     nivel
     `)
@@ -83,9 +93,7 @@ nena = sprites.create(assets.image`
     `, SpriteKind.Player)
 scene.cameraFollowSprite(nena)
 controller.moveSprite(nena)
-let MAX_TREES = 10
-let trees : Sprite[] = []
-create_tree(40, 40)
-create_tree(120, 60)
-create_tree(80, 120)
-create_tree(200, 100)
+MAX_TREES = 10
+game.onUpdateInterval(TREE_SPAWN_TIME, function on_update_interval() {
+    spawn_tree()
+})
