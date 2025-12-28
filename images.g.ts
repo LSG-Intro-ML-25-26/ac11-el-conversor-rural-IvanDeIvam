@@ -86,7 +86,7 @@ f f f c 3 c c c c 3 c f f f
 ...............ffceec...............
 `;
             case "image4":
-            case "npc1":return img`
+            case "npc-front":return img`
 . . . . . . f f f f . . . . . . 
 . . . . f f f 2 2 f f f . . . . 
 . . . f f f 2 2 2 2 f f f . . . 

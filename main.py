@@ -1,3 +1,38 @@
+NPC = SpriteKind.create()
+
+npcs: List[Sprite] = []
+
+def spawn_npcs():
+    global npcs
+    positions = [(72, 232), (432, 232), (72, 432), (432, 432)]
+    for pos in positions:
+        npc = sprites.create(assets.image("""
+            npc-front
+        """), NPC)
+        npc.set_position(pos[0], pos[1])
+        npcs.append(npc)
+
+npc_to_talk: Sprite = None
+
+def check_npc_overlap():
+    global npc_to_talk
+    overlapping = False
+    for npc in npcs:
+        if nena.overlaps_with(npc):
+            npc_to_talk = npc
+            overlapping = True
+            break
+    if not overlapping:
+        npc_to_talk = None
+
+game.on_update(check_npc_overlap)
+
+def on_b_pressed():
+    if npc_to_talk:
+        game.show_long_text("Hola! Puc intercanviar llenya per productes o viceversa.", DialogLayout.BOTTOM)
+
+controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
+
 def on_down_pressed():
     animation.run_image_animation(nena,
         assets.animation("""
@@ -98,6 +133,7 @@ nena = sprites.create(assets.image("""
     """), SpriteKind.player)
 scene.camera_follow_sprite(nena)
 controller.move_sprite(nena)
+spawn_npcs()
 MAX_TREES = 10
 
 def on_update_interval():
